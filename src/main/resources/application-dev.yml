@@ -1,0 +1,29 @@
+
+server:
+  port: 5013
+
+logging:
+  file:
+    name: autobackup.log
+
+backup:
+  filePort: 5014
+  options:
+    - databaseType: MySql,
+      backupPath: /home/aning/Documents/backup/mysql
+      ip: 127.0.0.1
+      port: 3306
+      username: aning
+      password: "000000"
+      databaseNames: [publish]
+      keep: 2
+      executeTime: 03:00
+#    - databaseType: Mongodb
+#      backupPath: /usr/backup/mongodb
+#      ip: 127.0.0.1
+#      port: 3306
+#      username: root
+#      password: Wuhanins..0
+#      databaseNames: [ylbics]
+#      keep: 2
+#      executeTime: 04:00
