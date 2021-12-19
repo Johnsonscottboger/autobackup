@@ -88,13 +88,13 @@
                     <td>
                         <table id="header" cellpadding="10" cellspacing="0" align="center" bgcolor="8fb3e9">
                             <tr>
-                                <td width="770" bgcolor="2d95ec"><h1 th:text="${title}"></h1></td>
+                                <td width="770" th:bgcolor="${success} ? '2d95ec' : 'c25459'"><h1 th:text="${title}"></h1></td>
                             </tr>
                             <tr>
-                                <td width="770" bgcolor="2d95ec"><h4 style="color:#ffffff!important">数据库自动备份通知</h4></td>
+                                <td width="770" th:bgcolor="${success} ? '2d95ec' : 'c25459'"><h4 style="color:#ffffff!important">数据库自动备份通知</h4></td>
                             </tr>
                             <tr>
-                                <td width="770" align="right" bgcolor="2d95ec"><p th:text="${dateTime}"></p></td>
+                                <td width="770" align="right" th:bgcolor="${success} ? '2d95ec' : 'c25459'"><p th:text="${dateTime}"></p></td>
                             </tr>
                         </table><!-- header -->
                     </td>
@@ -120,7 +120,7 @@
                             <tr>
                                 <td width="570" th:if="${success}">
                                     <h5 th:text="已成功备份"></h5>
-                                    <a th:href="#" th:text="${backupPath}"></a>
+                                    <a href="#" th:text="${backupPath}"></a>
                                     <h5></h5>
                                 </td>
 

@@ -43,7 +43,7 @@ class DefaultNotificationServiceImpl : IEventHandler<BackupEvent> {
                     databaseIpPort = "${e.option.ip}:${e.option.port}",
                     success = false,
                     backupPath = "",
-                    message = "${e.exception?.message}  ${e.exception?.stackTrace}"
+                    message = e.exception.toString()
                 )
             )
         }

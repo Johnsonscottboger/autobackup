@@ -4,6 +4,7 @@ import com.aning.autobackup.config.Config
 import com.aning.autobackup.event.BackupEvent
 import com.aning.autobackup.eventbus.IEventBus
 import com.aning.autobackup.service.backup.IBackup
+import com.sun.org.apache.xpath.internal.operations.Bool
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -30,6 +31,8 @@ class Scheduled {
     @Autowired
     private lateinit var backup: Array<IBackup>
 
+    private var init: Boolean = false
+
     private var start: Boolean = false
 
     fun start() {
@@ -44,6 +47,9 @@ class Scheduled {
 
     @Scheduled(initialDelay = 10000, fixedRate = 61000)
     fun task() {
+        if(!init)
+            start()
+
         if (!start) return
         log.info("定时任务执行中")
         execute(false)

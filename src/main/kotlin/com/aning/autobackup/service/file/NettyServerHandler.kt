@@ -155,6 +155,8 @@ class NettyServerHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
     }
 
     private fun sendListing(ctx: ChannelHandlerContext, file: File, uri: String?) {
+        sendError(ctx, HttpResponseStatus.FORBIDDEN)
+        return
         val builder = StringBuilder().apply {
             append("<!DOCTYPE html>\r\n")
             append("<html><head><meta charset='utf-8' /><title>")
