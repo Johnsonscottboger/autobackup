@@ -43,22 +43,45 @@ class Scheduled {
     }
 
     @Scheduled(initialDelay = 10000, fixedRate = 61000)
-    fun execute() = runBlocking(Dispatchers.IO) {
-        if (!start) return@runBlocking
+    fun task() {
+        if (!start) return
         log.info("定时任务执行中")
+        execute(false)
+    }
+
+    fun execute(immediately: Boolean = false) = runBlocking(Dispatchers.IO) {
         val now = LocalDateTime.now()
         for (option in config.options) {
-            log.info("\t当前时间: ${now.format(formatter)}, 计划执行时间: ${option.executeTime}")
-            if (option.executeTime != now.format(formatter))
-                continue
+            if (!immediately) {
+                if (option.executeTime != now.format(formatter))
+                    continue
+            }
             val impls = backup.filter { p -> p.databaseType == option.databaseType }
             if (impls.isEmpty()) {
                 log.error("找不到支持的数据库类型:${option.databaseType}")
             }
             launch {
                 impls.forEach {
-                    val fileName = it.execute(option)
-                    eventBus.publishAsync(BackupEvent(fileName))
+                    try {
+                        val fileName = it.execute(option)
+                        eventBus.publishAsync(
+                            BackupEvent(
+                                option = option,
+                                success = true,
+                                backupPath = fileName
+                            )
+                        )
+                    } catch (ex: Exception) {
+                        log.error("备份失败", ex)
+                        eventBus.publishAsync(
+                            BackupEvent(
+                                option = option,
+                                success = false,
+                                backupPath = "",
+                                exception = ex,
+                            )
+                        )
+                    }
                 }
             }
         }

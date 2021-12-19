@@ -6,8 +6,18 @@ logging:
   file:
     name: autobackup.log
 
+spring:
+  mail:
+    host: smtp.wuhanins.com
+    username: wangnb@wuhanins.com
+    port: 25
+
 backup:
   filePort: 5014
+  notification:
+    email: wangnb@wuhanins.com
+    success: true
+    error: true
   options:
     - databaseType: MySql,
       backupPath: /home/aning/Documents/backup/mysql

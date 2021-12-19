@@ -34,7 +34,7 @@ class MySqlBackupImpl : IBackup {
             val file = Path(path.toString(), "$database.sql")
             val cmd =
                 "mysqldump -h${option.ip} -P${option.port} -u${option.userName} -p${option.password} --databases $database > $file"
-            val shell = if (os.equals("win", true)) arrayOf("cmd", "/c", cmd) else arrayOf("/bin/sh", "-c", cmd)
+            val shell = if (os.startsWith("win", true)) arrayOf("cmd", "/c", cmd) else arrayOf("/bin/sh", "-c", cmd)
             val process = Runtime.getRuntime().exec(shell)
             val error = process.errorStream.reader().use { p -> p.readText() }
             val exitValue = process.waitFor()

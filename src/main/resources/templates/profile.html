@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>配置</title>
+</head>
+<body>
+<form action="/profile" method="post">
+    <p>邮箱地址: <input type="text" name="username" th:value="${profile.username}" readonly></p>
+    <p>请输入密码: <input type="password" name="password"/></p>
+    <input type="submit" th:value="保存">
+    <a href="./test">测试邮箱配置</a>
+</form>
+</body>
+</html>

@@ -2,16 +2,22 @@ package com.aning.autobackup.controller
 
 import com.aning.autobackup.config.Config
 import com.aning.autobackup.model.BackupFiles
+import com.aning.autobackup.model.Profile
 import com.aning.autobackup.service.core.Scheduled
+import com.aning.autobackup.service.email.IMailService
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.tomcat.util.json.JSONParser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.configurationprocessor.json.JSONObject
 import org.springframework.boot.configurationprocessor.json.JSONStringer
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.servlet.ModelAndView
 import java.io.File
 
 @Controller
@@ -23,20 +29,15 @@ class HomeController {
     @Autowired
     private lateinit var scheduled: Scheduled
 
-    @ResponseBody
-    @GetMapping("/", produces = ["text/html; charset=UTF-8"])
+    @Autowired
+    private lateinit var mailService: IMailService
+
+    @Autowired
+    private lateinit var environment: Environment
+
+    @GetMapping("/")
     fun index(): String {
-        return """
-            <!DOCTYPE html>
-            <html><head><meta charset='utf-8' /><title>自动备份服务</title></head>
-            <body>
-            <h3>数据库自动备份服务: 支持 MySql, Mongodb</h3>
-            <ul>
-            <li><a href="./start">启动</a></li>
-            <li><a href="./stop">停止</a></li>
-            <li><a href="./config">查看配置</a></li>
-            </ul>
-        """.trimIndent()
+        return "index"
     }
 
     @ResponseBody
@@ -50,7 +51,15 @@ class HomeController {
     @GetMapping("/stop")
     fun stop(): String {
         scheduled.stop()
-        return "Stop"
+        return "Stop success!"
+    }
+
+    @ResponseBody
+    @GetMapping("/execute")
+    fun execute(): String {
+        scheduled.start()
+        scheduled.execute(true)
+        return "OK"
     }
 
     @ResponseBody
@@ -75,5 +84,29 @@ class HomeController {
             }
         }
         return list
+    }
+
+    @GetMapping("/profile")
+    fun profile(): ModelAndView {
+        val model = Profile(environment.getProperty("spring.mail.username")!!)
+        return ModelAndView("profile", "profile", model)
+    }
+
+    @PostMapping("/profile")
+    fun profile(username: String, password: String): ModelAndView {
+        mailService.setPassword(username, password)
+        val model = Profile(environment.getProperty("spring.mail.username")!!)
+        return ModelAndView("profile", "profile", model)
+    }
+
+    @ResponseBody
+    @GetMapping("/test")
+    fun test(): String {
+        return try {
+            mailService.test()
+            "OK"
+        } catch (ex: Exception) {
+            "失败: ${ex.message}"
+        }
     }
 }
