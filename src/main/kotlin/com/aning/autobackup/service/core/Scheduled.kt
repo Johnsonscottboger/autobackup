@@ -47,9 +47,10 @@ class Scheduled {
 
     @Scheduled(initialDelay = 10000, fixedRate = 61000)
     fun task() {
-        if(!init)
+        if(!init) {
             start()
-
+            init = true
+        }
         if (!start) return
         log.info("定时任务执行中")
         execute(false)
@@ -59,6 +60,7 @@ class Scheduled {
         val now = LocalDateTime.now()
         for (option in config.options) {
             if (!immediately) {
+                log.info("当前时间: ${now.format(formatter)}, 计划执行时间: ${option.executeTime}")
                 if (option.executeTime != now.format(formatter))
                     continue
             }

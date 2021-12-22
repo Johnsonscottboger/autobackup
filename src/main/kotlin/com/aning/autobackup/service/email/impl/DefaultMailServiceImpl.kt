@@ -10,6 +10,7 @@ import org.thymeleaf.context.Context
 import java.io.File
 import java.util.*
 import javax.annotation.Resource
+import kotlin.io.path.createDirectories
 import kotlin.reflect.full.memberProperties
 
 @Service
@@ -21,10 +22,20 @@ class DefaultMailServiceImpl : IMailService {
     @Resource
     private lateinit var templateEngine: TemplateEngine
 
-    private val profile = "${System.getProperty("user.dir")}${File.separatorChar}.profile"
+    private val profile: String
+        get() {
+            val os = System.getProperty("os.name")
+            return if (os.startsWith("win", true)) {
+                "${System.getProperty("user.name")}\\AppData\\autobackup\\.profile"
+            } else {
+                "${System.getProperty("user.name")}/autobackup/.profile"
+            }
+        }
 
     override fun setPassword(username: String, password: String) {
         val file = File(profile)
+        if (!file.parentFile.exists())
+            file.parentFile.toPath().createDirectories()
         val text = "${username}:$password\n"
         val bytes = Base64.getEncoder().encode(text.toByteArray())
         file.writeBytes(bytes)
